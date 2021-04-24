@@ -1,19 +1,16 @@
 const express = require('express');
+const morgan = require('morgan');
+
+const tourRoute = require('./routes/toursRoutes');
+const usersRoute = require('./routes/usersRoutes');
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res
-    .status(200)
-    .json({ message: 'Hello from the server side', app: 'Some data' });
-});
+app.use(express.json());
+app.use(morgan('dev'));
 
-app.post('/', (req, res) => {
-  res.status(200).send('You can post to this endpoint');
-});
+/// ROUTES
+app.use('/api/v1/tours', tourRoute);
+app.use('/api/v1/users', usersRoute);
 
-const port = 3000;
-
-app.listen(port, '127.0.0.1', () => {
-  console.log('App running on port ' + port);
-});
+module.exports = app;

@@ -1,0 +1,15 @@
+const express = require('express');
+const usersController = require('../controllers/usersController');
+const router = express.Router();
+
+router
+  .route('/')
+  .get(usersController.getUsers)
+  .post(usersController.createUser);
+router
+  .route('/:id')
+  .get(usersController.getUserById)
+  .patch(usersController.updateUserById)
+  .delete(usersController.deleteUserById);
+
+module.exports = router;
