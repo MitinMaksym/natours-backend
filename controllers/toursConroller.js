@@ -150,7 +150,6 @@ exports.getToursStats = async (req, res) => {
         },
       },
       { $sort: { avgPrice: 1 } },
-      { $match: { minPrice: { $lte: 500 } } },
     ]);
 
     res

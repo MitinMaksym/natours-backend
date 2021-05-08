@@ -57,6 +57,10 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -70,15 +74,35 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-tourSchema.pre('save', function (next) {
-  console.log('Will save document...');
+// tourSchema.pre('save', function (next) {
+//   console.log('Will save document...');
+//   next();
+// });
+
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
+
+//QUERY MIDDLEWARE
+// tourSchema.pre(/^find/, function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   this.start = new Date();
+//   next();
+// });
+
+// tourSchema.post(/^find/, function (docs, next) {
+//   console.log(docs);
+//   console.log(`The request took ${new Date() - this.start}`);
+//   next();
+// });
+
+tourSchema.pre('aggregate', function (next) {
+  console.log(this.pipeline());
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
 
-tourSchema.post('save', function (doc, next) {
-  console.log(doc);
-  next();
-});
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
