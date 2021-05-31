@@ -4,7 +4,8 @@
   "description": "Learn node",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "debug": "ndb server.js"
   },
   "author": "Maksym Mitin",
   "license": "ISC",
@@ -13,7 +14,8 @@
     "express": "^4.17.1",
     "mongoose": "^5.12.7",
     "morgan": "^1.10.0",
-    "slugify": "^1.5.2"
+    "slugify": "^1.5.2",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
