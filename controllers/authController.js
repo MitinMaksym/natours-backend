@@ -55,7 +55,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
     // Validate token
     if (!token) {
-      return next(new AppError("You are not logged in. Please log in to get an access"), 401)
+      return next(new AppError("You are not logged in. Please log in to get an access",401))
     }
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
 
@@ -73,5 +73,11 @@ exports.protect = catchAsync(async (req, res, next) => {
 // GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser
     next()
-
   })
+
+  exports.restrictTo = (...roles) => (req, res, next) => {
+      if (!roles.includes(req.user.role)) {
+          return next(new AppError("You don't have a permission to perform this action", 403))
+      }
+      next()
+  }
