@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -26,6 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
+    required: [true, "passwordConfirm is required"],
     validate: {
       // This works only on CREATE AND SAVE
       validator: function (val) {
@@ -41,7 +43,9 @@ const userSchema = new mongoose.Schema({
     type:String,
     enum:["user","admin", "guide", "lead-guide"],
     default:"user"
-  }
+  },
+  passwordResetToken: String,
+  passwordResetExpiresAt: Date
 });
 
 
@@ -57,8 +61,15 @@ userSchema.pre("save", async function(next) {
   this.passwordConfirm = undefined;
   next();
 })
+
+userSchema.pre("save", async function(next) {
+  //Only run this function if password was actually modified
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000
+  next()
+})
 //  INSTANCE METHODS
-userSchema.methods.correctPassword = async function(
+  userSchema.methods.correctPassword = async function (
     candidatePassword,
     userPassword
   ) {
@@ -76,6 +87,14 @@ userSchema.methods.correctPassword = async function(
   
 return false;     
   };
+
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex")
+  this.passwordResetExpiresAt = Date.now() + 10 * 60 * 1000
+
+  return resetToken
+}
   
 const User = mongoose.model('User', userSchema)
 
