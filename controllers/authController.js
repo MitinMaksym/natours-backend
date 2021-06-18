@@ -8,7 +8,18 @@ const {promisify} = require('util')
 
 const signToken = (id) => {
     return jwt.sign({id},process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})
+}
 
+const createSendToken = (user, statusCode, res) => {
+    const token = signToken(user._id)
+
+    res.status(statusCode).send({
+        status: 'success',
+        token,
+        data:{
+            user
+        }
+    })
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
@@ -19,16 +30,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       consfirmPassword: req.body.consfirmPassword,
       passwordChangedAt: req.body.passwordChangedAt
     });
-
-    const token = signToken(newUser._id)
-
-    res.status(201).send({
-        status: 'success',
-        token,
-        data:{
-            user:newUser
-        }
-    })
+    createSendToken(newUser,201,res)
 })
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -41,12 +43,7 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user ||!(await user.correctPassword(password, user.password))) {
       return next(new AppError('Email or password is incorrect'), 401)
   }
-  const token = signToken(user._id)
-
-      res.status(200).send({
-        status: 'success',
-        token,
-      });
+  createSendToken(user, 200, res)
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -135,13 +132,19 @@ exports.protect = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined
     user.passwordResetExpiresAt = undefined
     await user.save()
-
-    const token = signToken(user._id)
-
-    res.status(200).send({
-      status: 'success',
-      token
-    });
-
+    createSendToken(user, 200, res)
     next();
-  }) 
+  })
+  
+  exports.updatePassword = catchAsync(async (req, res, next) => {
+    const currentUser = await User.findById(req.user._id).select("+password")
+    if (!(await currentUser.correctPassword(req.body.currentPassword,currentUser.password ))) {
+        return next(new AppError("Current password is wrong",401))
+    }
+    currentUser.password = req.body.password
+    currentUser.passwordConfirm = req.body.passwordConfirm
+    await currentUser.save()
+    // User.findByIdAndUpdate won't work as intended
+    createSendToken(currentUser, 200, res)
+    next()
+  })
