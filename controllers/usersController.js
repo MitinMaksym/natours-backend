@@ -10,11 +10,16 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj
 }
 
-exports.getUsers = (req, res) => {
-  res
-    .status(500)
-    .send({ status: 'error', message: "This route isn't defined yet" });
-};
+exports.getUsers = catchAsync(async (req, res) => {
+ const users = await User.find()
+ res.status(200).json({
+  status:'success',
+  length:users.length,
+  data: {
+    users
+  }
+})
+});
 exports.createUser = (req, res) => {
   res
     .status(500)
@@ -40,10 +45,14 @@ exports.updateUserById = catchAsync(async (req, res, next) => {
   }
   const filteredObj = filterObj(req.body,"email","name")
   const newUser = await User.findByIdAndUpdate(req.user._id,filteredObj,{new:true,runValidators:true})
-  console.log(newUser)
 
   res.status(200).json({
-    status:"success",
-    user:newUser
-  })
+    status: 'success',
+    data: { user: newUser },
+  });
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+   await User.findByIdAndUpdate(req.user._id,{active:false});
+   res.status(204).json({status:'success',data:null})
 });

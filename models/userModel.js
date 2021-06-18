@@ -45,7 +45,11 @@ const userSchema = new mongoose.Schema({
     default:"user"
   },
   passwordResetToken: String,
-  passwordResetExpiresAt: Date
+  passwordResetExpiresAt: Date,
+  active:{
+    type:Boolean,
+    default:true
+  }
 });
 
 
@@ -66,6 +70,11 @@ userSchema.pre("save", async function(next) {
   //Only run this function if password was actually modified
   if (!this.isModified('password') || this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000
+  next()
+})
+
+userSchema.pre(/^find/, async function(next){
+  this.find({ active: { $ne: false } });
   next()
 })
 //  INSTANCE METHODS
@@ -95,8 +104,7 @@ userSchema.methods.createPasswordResetToken = function() {
 
   return resetToken
 }
-
-  
+ 
 const User = mongoose.model('User', userSchema)
 
 module.exports = User
