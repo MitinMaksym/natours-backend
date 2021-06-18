@@ -25,6 +25,10 @@ router
   .patch(authController.protect, authController.updatePassword);
 
   router
+  .route('/updateMe')
+  .patch(authController.protect, usersController.updateUserById);
+
+  router
   .route('/')
   .get(usersController.getUsers)
   .post(usersController.createUser);
@@ -32,7 +36,7 @@ router
   router
   .route('/:id')
   .get(usersController.getUserById)
-  .patch(usersController.updateUserById)
+  // .patch(usersController.updateUserById)
   .delete(usersController.deleteUserById);
 
 module.exports = router;
