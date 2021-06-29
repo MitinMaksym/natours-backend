@@ -21,7 +21,7 @@ mongoose
   })
   .catch((err) => console.log(err));
 
-const data = JSON.parse(fs.readFileSync('./data/tours-simple.json', 'utf-8'));
+const data = JSON.parse(fs.readFileSync('./data/tours.json', 'utf-8'));
 
 const deleteAllDocuments = async () => {
   try {
