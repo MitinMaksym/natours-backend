@@ -8,8 +8,9 @@ const xss = require('xss-clean')
 const AppError = require('./utils/AppError');
 const errorController = require('./controllers/errorController');
 
-const tourRoute = require('./routes/toursRoutes');
-const usersRoute = require('./routes/usersRoutes');
+const tourRoute = require('./routes/tourRoutes');
+const usersRoute = require('./routes/userRoutes');
+const reviewsRoute = require('./routes/reviewRoutes');
 
 const app = express();
 //GLOBAL MIDDLEWARES
@@ -57,6 +58,7 @@ app.use(express.static(`${__dirname}/public`));
 /// ROUTES
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', usersRoute);
+app.use('/api/v1/reviews', reviewsRoute);
 app.all('*', (req, res, next) => {
   next(new AppError(`Path ${req.originalUrl} was not found`, 404)); // if we pass a parameter to next that means there is an error
 });
