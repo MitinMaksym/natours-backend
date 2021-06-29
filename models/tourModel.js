@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./userModel');
+//const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -98,7 +98,7 @@ const tourSchema = new mongoose.Schema(
         coordinates: [Number],
       },
     ],
-    guides: Array,
+    guides: [{type: mongoose.Types.ObjectId, ref: 'User'}],
     secretTour: {
       type: Boolean,
       default: false,
@@ -116,12 +116,13 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name);
   next();
 });
+// Embedding guides
 
-tourSchema.pre('save', async function (next) {
-  const guidesPromises = this.guides.map(async id => await User.findById(id))
-  this.guides = await Promise.all(guidesPromises)
-  next();
-});
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async id => await User.findById(id))
+//   this.guides = await Promise.all(guidesPromises)
+//   next();
+// });
 
 // tourSchema.post('save', function (doc, next) {
 //   console.log(doc);
@@ -132,6 +133,14 @@ tourSchema.pre('save', async function (next) {
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   this.start = new Date();
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select:'-__v -passwordChangedAt'
+  })
   next();
 });
 
