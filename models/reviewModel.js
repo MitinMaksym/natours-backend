@@ -19,7 +19,7 @@ const reviewSchema = new mongoose.Schema(
     tour: {
       type: mongoose.Types.ObjectId,
       ref: 'Tour',
-      required: [true, 'Review must belong to a tour'],
+      required: [true, 'Review must belong to a tour']
     },
     createdAt: {
       type: Date,
@@ -30,11 +30,16 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.pre(/^find/, function(next) {
+  // this.populate({
+  //   path: 'user',
+  //   select: 'name',
+  // }).populate({
+  //   path: 'tour',
+  //   select: 'name',
+  // });
+
   this.populate({
     path: 'user',
-    select: 'name',
-  }).populate({
-    path: 'tour',
     select: 'name',
   });
 
