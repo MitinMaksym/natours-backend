@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const AppError = require('../utils/AppError');
-const catchAsync = require('../utils/catchAsync')
+const catchAsync = require('../utils/catchAsync');
+const { deleteOne } = require('./handleFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {}
@@ -32,11 +33,7 @@ exports.getUserById = (req, res) => {
     .send({ status: 'error', message: "This route isn't defined yet" });
 };
 
-exports.deleteUserById = (req, res) => {
-  res
-    .status(500)
-    .send({ status: 'error', message: "This route isn't defined yet" });
-};
+exports.deleteUser = deleteOne(User)
 
 exports.updateUserById = catchAsync(async (req, res, next) => {
   

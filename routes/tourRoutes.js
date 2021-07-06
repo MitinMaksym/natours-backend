@@ -19,7 +19,7 @@ router
   .route('/:id')
   .get(toursController.getTourById)
   .patch(toursController.updateTourById)
-  .delete(authController.protect, authController.restrictTo('admin'), toursController.deleteTourById);
+  .delete(authController.protect, authController.restrictTo('admin'), toursController.deleteTour);
 
   router.use('/:tourId/reviews', reviewRouter)
 
