@@ -1,7 +1,7 @@
 const User = require('../models/userModel')
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
-const { deleteOne } = require('./handleFactory');
+const { deleteOne, updateOne } = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {}
@@ -34,8 +34,9 @@ exports.getUserById = (req, res) => {
 };
 
 exports.deleteUser = deleteOne(User)
+exports.updateUser = updateOne(User)
 
-exports.updateUserById = catchAsync(async (req, res, next) => {
+exports.updateMe = catchAsync(async (req, res, next) => {
   
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError("For updating password please use /updatePassword", 400))

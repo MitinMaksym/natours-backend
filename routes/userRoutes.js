@@ -26,7 +26,7 @@ router
 
   router
   .route('/updateMe')
-  .patch(authController.protect, usersController.updateUserById);
+  .patch(authController.protect, usersController.updateMe);
 
   router
   .route('/deleteMe')
@@ -40,7 +40,7 @@ router
   router
   .route('/:id')
   .get(usersController.getUserById)
-  // .patch(usersController.updateUserById)
+  .patch(usersController.updateUser)
   .delete(authController.protect,authController.restrictTo('admin'),usersController.deleteUser);
 
 module.exports = router;
