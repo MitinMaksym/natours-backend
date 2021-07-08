@@ -2,7 +2,7 @@ const Tour = require('../models/tourModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const ApiFeatures = require('../utils/apiFeatures');
-const { deleteOne, updateOne } = require('./handlerFactory');
+const { deleteOne, updateOne, createOne } = require('./handlerFactory');
 
 // exports.checkID = (req, res, next, val) => {
 //   const tour = tours.find((tour) => tour.id === +val);
@@ -40,16 +40,6 @@ exports.getTours = catchAsync(async (req, res) => {
       .json({ status: 'success', result: tours.length, data: { tours } });
   }) 
 
-exports.createTour = catchAsync(async (req, res) => {
-  const tour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
-
 exports.getTourById = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id).populate({path: 'reviews'});
   if (!tour) {
@@ -63,6 +53,7 @@ exports.getTourById = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.createTour = createOne(Tour)
 exports.updateTour = updateOne(Tour)
 exports.deleteTour = deleteOne(Tour)
 
