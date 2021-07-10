@@ -21,7 +21,10 @@ exports.getUsers = getAll(User);
 exports.getUser = getOne(User);
 exports.deleteUser = deleteOne(User);
 exports.updateUser = updateOne(User);
-
+exports.getMe = (req, _, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     return next(
