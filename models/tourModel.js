@@ -98,26 +98,26 @@ const tourSchema = new mongoose.Schema(
         coordinates: [Number],
       },
     ],
-    guides: [{type: mongoose.Types.ObjectId, ref: 'User'}],
+    guides: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
     secretTour: {
       type: Boolean,
       default: false,
     },
   },
-   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
-
 
 // Virtual populate
 tourSchema.virtual('reviews', {
   ref: 'Review',
   localField: '_id',
-  foreignField: 'tour'
- 
+  foreignField: 'tour',
 });
 
 //DOCUMENT MIDDLEWARE: runs after and before .save() and .create()
@@ -148,8 +148,8 @@ tourSchema.pre(/^find/, function (next) {
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
-    select:'-__v -passwordChangedAt'
-  })
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 

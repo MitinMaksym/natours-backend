@@ -69,6 +69,7 @@ exports.getAll = (Model) =>
     if (req.params.tourId) filter = { id: req.params.tourId };
     const apiFeatures = new ApiFeatures(Model.find(filter), req.query);
     apiFeatures.filter().sort().limitFields().paginate();
+    //const docs = await apiFeatures.query.explain();
     const docs = await apiFeatures.query;
     res
       .status(200)
