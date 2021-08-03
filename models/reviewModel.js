@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -19,7 +19,7 @@ const reviewSchema = new mongoose.Schema(
     tour: {
       type: mongoose.Types.ObjectId,
       ref: 'Tour',
-      required: [true, 'Review must belong to a tour']
+      required: [true, 'Review must belong to a tour'],
     },
     createdAt: {
       type: Date,
@@ -29,7 +29,7 @@ const reviewSchema = new mongoose.Schema(
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-reviewSchema.pre(/^find/, function(next) {
+reviewSchema.pre(/^find/, function (next) {
   // this.populate({
   //   path: 'user',
   //   select: 'name',
@@ -40,12 +40,12 @@ reviewSchema.pre(/^find/, function(next) {
 
   this.populate({
     path: 'user',
-    select: 'name',
+    select: 'name photo',
   });
 
-  next()
-})
+  next();
+});
 
-const reviewModel = mongoose.model('Review', reviewSchema)
+const reviewModel = mongoose.model('Review', reviewSchema);
 
-module.exports = reviewModel
+module.exports = reviewModel;
