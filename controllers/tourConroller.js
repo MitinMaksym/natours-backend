@@ -35,6 +35,8 @@ exports.aliasTopTours = async (req, res, next) => {
   next();
 };
 
+//TODO calculation reviews
+
 exports.getTours = getAll(Tour);
 exports.getTour = getOne(Tour, { path: 'reviews' });
 exports.createTour = createOne(Tour);
