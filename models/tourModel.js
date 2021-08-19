@@ -96,6 +96,7 @@ const tourSchema = new mongoose.Schema(
         address: String,
         description: String,
         coordinates: [Number],
+        day: Number,
       },
     ],
     guides: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
