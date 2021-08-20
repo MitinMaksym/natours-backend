@@ -8,6 +8,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const AppError = require('./utils/AppError');
 const errorController = require('./controllers/errorController');
+var cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const tourRoute = require('./routes/tourRoutes');
 const usersRoute = require('./routes/userRoutes');
@@ -23,8 +25,13 @@ app.set('views', path.join(__dirname, 'views'));
 //Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(cors({ origin: true, credentials: true }));
 //Security http headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 //Development loging
 if (process.env.NODE_ENV === 'development') {
@@ -38,9 +45,18 @@ const limiter = rateLimit({
   message: 'Too many requests. Please try again in an hour',
 });
 app.use('/app', limiter);
-
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
+});
 //Body parser. Reading data from body into req.body
 app.use(express.json());
+
+app.use(cookieParser());
 
 //Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -61,6 +77,11 @@ app.use(
     ],
   })
 );
+
+app.use((req, res, next) => {
+  console.log(req.cookies);
+  next();
+});
 
 /// ROUTES
 app.use('/', viewRoutes);
