@@ -50,7 +50,6 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Provide email and password please', 400));
   }
   const user = await User.findOne({ email }).select('+password');
-  console.log(!(await user.correctPassword(password, user.password)));
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Email or password is incorrect', 401));
@@ -66,7 +65,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-  }
+  } else if (req.cookies.jwt) token = req.cookies.jwt;
   // Validate token
   if (!token) {
     return next(
@@ -99,6 +98,31 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+exports.isLoggedIn = async (req, res, next) => {
+  // Getting token and check if it's there
+  let token;
+  if (req.cookies.jwt) token = req.cookies.jwt;
+  // Validate token
+  if (!token) {
+    return next();
+  }
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // Check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next();
+  }
+
+  // Check if the user changed password after token was generated
+  if (currentUser.passwordChangedAfter(decoded.iat)) {
+    return next();
+  }
+  // GRANT ACCESS TO PROTECTED ROUTE
+  res.locals.user = currentUser;
+  next();
+};
 
 exports.restrictTo =
   (...roles) =>

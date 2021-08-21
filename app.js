@@ -78,11 +78,6 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  console.log(req.cookies);
-  next();
-});
-
 /// ROUTES
 app.use('/', viewRoutes);
 app.use('/api/v1/tours', tourRoute);

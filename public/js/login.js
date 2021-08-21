@@ -1,7 +1,7 @@
 const login = async (email, password) => {
   try {
     const res = await axios.post(
-      'http://127.0.0.1:3003/api/v1/users/login',
+      'http://127.0.0.1:3000/api/v1/users/login',
 
       {
         email,
@@ -9,8 +9,13 @@ const login = async (email, password) => {
       },
       { withCredentials: true }
     );
+
+    if (res.data.status === 'success') {
+      alert('You logged in successfully!');
+      location.assign('/');
+    }
   } catch (err) {
-    console.log(err.response.data);
+    alert(err.response.data.message);
   }
 };
 
