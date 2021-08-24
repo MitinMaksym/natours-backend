@@ -2,7 +2,7 @@ import { login, logout } from './login';
 import { showMap } from './mapbox';
 
 const mapContainer = document.getElementById('map');
-const form = document.querySelector('.form');
+const form = document.querySelector('.form--login');
 const logoutBtn = document.querySelector('.nav__el--logout');
 
 if (mapContainer) {
