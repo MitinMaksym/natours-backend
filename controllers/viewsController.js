@@ -2,7 +2,7 @@ const Tour = require('../models/tourModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-exports.getOverview = catchAsync(async (req, res, next) => {
+exports.getOverview = catchAsync(async (_, res) => {
   const tours = await Tour.find({});
   res.status(200).render('overview', { tours });
 });
@@ -14,7 +14,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 
   if (!tour) {
-    return next(new AppError('There is no a tour with such a name', 404));
+    return next(new AppError('There is no  tour with such a name', 404));
   }
   res.status(200).render('tour', { tour: tour, title: tour.name });
 });
