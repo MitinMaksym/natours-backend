@@ -1,16 +1,16 @@
 import { showAlert } from './alerts';
 import axios from 'axios';
 
-export const updateData = async (dataObj) => {
+export const updateSettings = async (data, type) => {
   try {
-    const res = await axios.patch(
-      'http://127.0.0.1:3003/api/v1/users/updateMe',
-      dataObj,
+    const url =
+      type === 'password'
+        ? 'http://127.0.0.1:3003/api/v1/users/updatePassword'
+        : 'http://127.0.0.1:3003/api/v1/users/updateMe';
 
-      { withCredentials: true }
-    );
+    const res = await axios.patch(url, data, { withCredentials: true });
     if (res.data.status === 'success') {
-      showAlert('success', 'The data was updated successfylly');
+      showAlert('success', `${type.toUpperCase()} was updated successfully`);
     }
   } catch (err) {
     console.log(err);
