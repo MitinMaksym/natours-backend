@@ -54,8 +54,12 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       new AppError('For updating password please use /updatePassword', 400)
     );
   }
+
   const filteredObj = filterObj(req.body, 'email', 'name');
-  const newUser = await User.findByIdAndUpdate(req.user._id, filteredObj, {
+  const updatedData = req.file
+    ? { ...filterObj, photo: req.file.filename }
+    : filterObj;
+  const newUser = await User.findByIdAndUpdate(req.user._id, updatedData, {
     new: true,
     runValidators: true,
   });
