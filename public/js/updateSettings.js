@@ -5,12 +5,15 @@ export const updateSettings = async (data, type) => {
   try {
     const url =
       type === 'password'
-        ? 'http://127.0.0.1:3003/api/v1/users/updatePassword'
-        : 'http://127.0.0.1:3003/api/v1/users/updateMe';
+        ? 'http://127.0.0.1:3000/api/v1/users/updatePassword'
+        : 'http://127.0.0.1:3000/api/v1/users/updateMe';
 
     const res = await axios.patch(url, data, { withCredentials: true });
     if (res.data.status === 'success') {
       showAlert('success', `${type.toUpperCase()} was updated successfully`);
+      setTimeout(() => {
+        if (type === 'data') location.reload();
+      }, 1000);
     }
   } catch (err) {
     console.log(err);

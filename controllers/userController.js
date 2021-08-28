@@ -72,8 +72,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   const filteredObj = filterObj(req.body, 'email', 'name');
   const updatedData = req.file
-    ? { ...filterObj, photo: req.file.filename }
-    : filterObj;
+    ? { ...filteredObj, photo: req.file.filename }
+    : filteredObj;
   const newUser = await User.findByIdAndUpdate(req.user._id, updatedData, {
     new: true,
     runValidators: true,
