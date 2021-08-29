@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
-const AppErrror = require('../utils/appError');
+const AppError = require('../utils/appError');
+const sharp = require('sharp');
 const {
   deleteOne,
   updateOne,
@@ -48,10 +49,32 @@ exports.uploadTourImages = upload.fields([
 ]);
 
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
-  if (!req.files) {
+  if (!req.files.imageCover || !req.files.images) {
     return next();
   }
-  console.log(req.files);
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  req.body.images = [];
+
+  await Promise.all(
+    req.files.images.map(async (image, idx) => {
+      const fileName = `tour-${req.params.id}-${Date.now()}-${idx + 1}.jpeg`;
+      await sharp(image.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${fileName}`);
+
+      req.body.images.push(fileName);
+    })
+  );
+
+  next();
 });
 exports.aliasTopTours = async (req, res, next) => {
   req.query.limit = '5';
